@@ -4,19 +4,22 @@ using UnityEngine;
 
 public class Executor : MonoBehaviour
 {
-    private BasicController[] controllers;
+    // private BasicController[] controllers;
+    private CMeteor controller;
     // Start is called before the first frame update
     void Start()
     {
-        //Найти все контроллеры
+        controller = GameObject.FindGameObjectWithTag("Controller").GetComponent<CMeteor>();
+        controller.ControllerStart();
     }
 
     // Update is called once per frame
     void Update()
     {
-        foreach (var controller in controllers)
-        {
-            controller.Execute();
-        }
+        controller.Execute();
+        // foreach (var controller in controllers)
+        // {
+        //     controller.Execute();
+        // }
     }
 }
