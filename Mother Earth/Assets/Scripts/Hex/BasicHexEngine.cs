@@ -113,6 +113,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
     public  BasicHexModel hexModel;
     int     neiboursCount;
     float   tickProgressDelta;
+    float   neigborsEffects;
     [SerializeField] List<BasicHexEngine> hexNeibours = new List<BasicHexEngine>();
 
     // Start is called before the first frame update
@@ -122,8 +123,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
         neiboursCount = hexNeibours.Count;
     }
 
-    private void getNeibours()
-    {
+    private void getNeibours() {
         Collider[] hitColliders = Physics.OverlapSphere(this.transform.position, 0.5f);
         foreach (var gobject in hitColliders)
         {
@@ -141,15 +141,14 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
     }
 
     // Process Hex on Frame
-    public void Tick()
-    {
+    public void Tick() {
         if (this.IsAlive())
         {
             tickProgressDelta = tickProgressDelta -
             (hexModel.GetWaterBalance() * waterKoef
             + hexModel.GetTemperatureBalance() * temperatureKoef)
             + 0.01f * Time.deltaTime;
-            hexModel.MakeProgress(tickProgressDelta);
+            hexModel.MakeProgress(tickProgressDelta + neigborsEffects / neiboursCount);
             hexModel.waterBalance -= 0.1f * Time.deltaTime;
             hexModel.temperatureBalance -= 0.1f * Time.deltaTime;
             tickProgressDelta -= 0.1f * Time.deltaTime;
@@ -162,48 +161,45 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
         return;
     }
 
-    public void EffectNeibours()
-    {
-        foreach (var neibour in hexNeibours)
+    //Effect neibours
+    public void EffectNeibours() {
+        if (this.IsAlive())
         {
-            neibour.hexModel.
+            foreach (var neibour in hexNeibours)
+            {
+                neibour.ProgresEffectAddition(tickProgressDelta);
+            }
         }
         return;
     }
 
     // Make dead a hex block
-    public void Die()
-    {
+    public void Die() {
         hexModel.SetState(HexState.Dead);
         hexModel.ResetAll();
     }
 
     // Make alive a hex block
-    public void Live()
-    {
+    public void Live() {
         hexModel.SetState(HexState.Alive);
     }
 
     // Is Hex is alive
-    public bool IsAlive()
-    {
+    public bool IsAlive() {
         return hexModel.GetState() == HexState.Alive;
     }
 
     // Set Sun Effect
-    public void SetSunEffect(float sunEffect)
-    {
+    public void SetSunEffect(float sunEffect) {
         hexModel.deltaTemperature = sunEffect;
     }
 
     // Set Water Effect
-    public void SetWaterEffect(float waterEffect)
-    {
+    public void SetWaterEffect(float waterEffect) {
         hexModel.deltaWater = waterEffect;
     }
 
-    public void ProgresEffect(float progresEffect)
-    {
-
+    public void ProgresEffectAddition(float progresEffect) {
+        neigborsEffects += progresEffect;
     }
 }
