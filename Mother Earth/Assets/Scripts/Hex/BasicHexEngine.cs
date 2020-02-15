@@ -4,40 +4,40 @@ using UnityEngine;
 
 // Stages of hex progress
 public enum ProgressState {
-    Nothing,
-    Bush,
-    Forest,
-    Animals,
-    StableAnimals,
-    Tribe,
-    Village,
-    City,
-    MediumCity,
-    MegaCity,
-    Winner
+    Nothing = 0,
+    Bush = 32,
+    Forest = 128,
+    Animals = 512,
+    StableAnimals = 1024,
+    Tribe = 2048,
+    Village = 4096,
+    City = 8192,
+    MediumCity = 16384,
+    MegaCitн = 32768,
+    Winner = 65536
 };
 
 // Dead or Alive hex state
-public enum HexState
-{
+public enum HexState {
     Dead,
     Alive
 };
 
-//Data class
-public class BasicHexEngine : MonoBehaviour, IHexEngine
-{
+public class BasicHexEngine : MonoBehaviour, IHexEngine {
+    const float waterKoef = 0.5f;
+    const float temperatureKoef = 0.5f;
+
+    //Inner data class
     public class BasicHexModel
     {
-        float temperatureBalance;
-        float waterBalance;
-        float progressPoints;
+        public float temperatureBalance;
+        public float waterBalance;
+        public float progressPoints;
 
-        float deltaTemperature;
-        float deltaWater;
-        float deltaProgress;
+        public float deltaTemperature;
+        public float deltaWater;
 
-        ProgressState HexProgressState;
+        private ProgressState HexProgressState;
 
         private HexState state;
 
@@ -47,7 +47,6 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine
             waterBalance = 0;
             deltaTemperature = 0;
             deltaWater = 0;
-            deltaProgress = 0;
             progressPoints = 0;
             state = HexState.Dead;
             HexProgressState = ProgressState.Nothing;
@@ -59,21 +58,71 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine
             return state;
         }
 
-        // Setter to make state implisitly (Dead or Alive)
+        // Setter to change state (Dead or Alive)
         public void SetState(HexState newState)
         {
             state = newState;
         }
-
+        // Add to progressPoints value
         public void MakeProgress(float progresRate)
         {
             progressPoints += progresRate;
         }
-    }
-    public BasicHexModel hexModel;
 
+        public float GetWaterBalance()
+        {
+            waterBalance += waterBalance + deltaWater * Time.deltaTime;
+            return System.Math.Abs(waterBalance);
+        }
+
+        public float GetTemperatureBalance()
+        {
+            temperatureBalance += temperatureBalance + deltaTemperature * Time.deltaTime;
+            return System.Math.Abs(temperatureBalance);
+        }
+
+        public void ResetEffects()
+        {
+            deltaTemperature = 0;
+            deltaWater = 0;
+        }
+
+        public void ResetAll()
+        {
+            temperatureBalance = 0;
+            waterBalance = 0;
+            deltaTemperature = 0;
+            deltaWater = 0;
+            progressPoints = 0;
+            state = HexState.Dead;
+            HexProgressState = ProgressState.Nothing;
+        }
+    }
+    public  BasicHexModel hexModel;
+    int     neiboursCount;
+    float   tickProgressDelta;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        hexModel = new BasicHexModel();
+    }
+
+    // Process Hex on Frame
     public void Tick()
     {
+        if (this.IsAlive())
+        {
+            tickProgressDelta = tickProgressDelta -
+            (hexModel.GetWaterBalance() * waterKoef
+            + hexModel.GetTemperatureBalance() * temperatureKoef)
+            + 0.01f * Time.deltaTime;
+            hexModel.MakeProgress(tickProgressDelta);
+        }
+        hexModel.waterBalance -= 0.1f * Time.deltaTime;
+        hexModel.temperatureBalance -= 0.1f * Time.deltaTime;
+        tickProgressDelta -= 0.1f * Time.deltaTime;
+        hexModel.ResetEffects();
         return;
     }
 
@@ -81,6 +130,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine
     public void Die()
     {
         hexModel.SetState(HexState.Dead);
+        hexModel.ResetAll();
     }
 
     // Make alive a hex block
@@ -90,14 +140,20 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine
     }
 
     // Is Hex is alive
-    public HexState IsAlive()
+    public bool IsAlive()
     {
-        return hexModel.GetState();
+        return hexModel.GetState() == HexState.Alive;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    // Set Sun Effect
+    public void SetSunEffect(float sunEffect)
     {
-        hexModel = new BasicHexModel();
+        hexModel.deltaTemperature = sunEffect;
+    }
+
+    // Set Water Effect
+    public void SetWaterEffect(float waterEffect)
+    {
+        hexModel.deltaWater = waterEffect;
     }
 }

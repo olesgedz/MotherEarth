@@ -6,5 +6,5 @@ interface IHexEngine
     void Tick();
     void Die();
     void Live();
-    HexState IsAlive();
+    bool IsAlive();
 }
