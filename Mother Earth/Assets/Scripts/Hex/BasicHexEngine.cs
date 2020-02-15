@@ -30,17 +30,17 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
     //Inner data class
     public class BasicHexModel
     {
-        public float temperatureBalance;
-        public float waterBalance;
-        public float progressPoints;
-        public float health;
+        [SerializeField] public float temperatureBalance;
+        [SerializeField] public float waterBalance;
+        [SerializeField] public float progressPoints;
+        [SerializeField] public float health;
 
         public float deltaTemperature;
         public float deltaWater;
 
-        private ProgressState hexProgressState;
+        [SerializeField] private ProgressState hexProgressState;
 
-        private HexState state;
+        [SerializeField] private HexState state;
 
         public BasicHexModel()
         {

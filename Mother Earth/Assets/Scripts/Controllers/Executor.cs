@@ -5,21 +5,21 @@ using UnityEngine;
 public class Executor : MonoBehaviour
 {
     // private BasicController[] controllers;
-    private CMeteor controller;
+    private MeteorController meteorController;
+    private HexController hexController;
     // Start is called before the first frame update
     void Start()
     {
-        controller = GameObject.FindGameObjectWithTag("Controller").GetComponent<CMeteor>();
-        controller.ControllerStart();
+        meteorController = GameObject.FindGameObjectWithTag("MeteorController").GetComponent<MeteorController>();
+        meteorController.ControllerStart();
+        hexController = GameObject.FindGameObjectWithTag("HexController").GetComponent<HexController>();
+        hexController.ControllerStart();
     }
 
     // Update is called once per frame
     void Update()
     {
-        controller.Execute();
-        // foreach (var controller in controllers)
-        // {
-        //     controller.Execute();
-        // }
+        hexController.Execute();
+        meteorController.Execute();
     }
 }
