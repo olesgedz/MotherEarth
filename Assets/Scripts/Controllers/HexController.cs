@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class HexController : BasicController
 {
-    private GameObject[] hexes;
+    [SerializeField] private GameObject[] hexes;
     private void Start()
     {
         hexes = GameObject.FindGameObjectsWithTag("Hex");
