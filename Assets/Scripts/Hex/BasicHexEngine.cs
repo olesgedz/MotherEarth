@@ -28,6 +28,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
     [SerializeField] const float temperatureKoef = 0.5f;
 
     //Inner data class
+    [System.Serializable]
     public class BasicHexModel
     {
         [SerializeField] public float temperatureBalance;
@@ -50,6 +51,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
             deltaWater = 0;
             progressPoints = 0;
             state = HexState.Dead;
+            health = 100;
             hexProgressState = ProgressState.Nothing;
         }
 
@@ -83,13 +85,13 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
 
         public float GetWaterBalance()
         {
-            waterBalance += waterBalance + deltaWater * Time.deltaTime;
+            waterBalance = waterBalance + deltaWater;
             return System.Math.Abs(waterBalance);
         }
 
         public float GetTemperatureBalance()
         {
-            temperatureBalance += temperatureBalance + deltaTemperature * Time.deltaTime;
+            temperatureBalance = temperatureBalance + deltaTemperature;
             return System.Math.Abs(temperatureBalance);
         }
 
@@ -106,14 +108,15 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
             deltaTemperature = 0;
             deltaWater = 0;
             progressPoints = 0;
+            health = 0;
             state = HexState.Dead;
             hexProgressState = ProgressState.Nothing;
         }
     }
-    public  BasicHexModel hexModel;
-    int     neiboursCount = 1;
-    float   tickProgressDelta;
-    float   neigborsEffects;
+    [SerializeField] public  BasicHexModel hexModel;
+    [SerializeField] int     neiboursCount = 1;
+    [SerializeField] float   tickProgressDelta;
+    [SerializeField] float   neigborsEffects;
     [SerializeField] List<BasicHexEngine> hexNeibours = new List<BasicHexEngine>();
 
     // Start is called before the first frame update
@@ -132,7 +135,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
             BasicHexEngine temp;
             if (temp = gobject.GetComponent<BasicHexEngine>())
             {
-                if (temp != this.gameObject)
+                if (temp != this)
                 {
                     hexNeibours.Add(temp);
                 }
@@ -144,10 +147,10 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
     public void Tick() {
         if (this.IsAlive())
         {
-            tickProgressDelta = tickProgressDelta -
+            tickProgressDelta = (tickProgressDelta -
             (hexModel.GetWaterBalance() * waterKoef
             + hexModel.GetTemperatureBalance() * temperatureKoef)
-            + 0.01f * Time.deltaTime;
+            + 0.1f) * Time.deltaTime;
             hexModel.MakeProgress(tickProgressDelta + neigborsEffects / neiboursCount);
             hexModel.waterBalance -= 0.1f * Time.deltaTime;
             hexModel.temperatureBalance -= 0.1f * Time.deltaTime;
@@ -181,6 +184,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
 
     // Make alive a hex block
     public void Live() {
+        hexModel.health = 100;
         hexModel.SetState(HexState.Alive);
     }
 
