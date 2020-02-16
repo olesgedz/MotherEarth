@@ -7,6 +7,11 @@ TagManager:
   - Controller
   - Hex
   - FxTemporaire
+  - Planet
+  - HexController
+  - MeteorController
+  - CloudController
+  - Clouds
   layers:
   - Default
   - TransparentFX

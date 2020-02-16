@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnvController : BasicController
 {
-    private GameObject[] hexes;
+    protected GameObject[] hexes;
     private void Start()
     {
         hexes = GameObject.FindGameObjectsWithTag("Hex");
