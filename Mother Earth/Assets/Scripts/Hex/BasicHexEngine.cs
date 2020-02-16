@@ -111,7 +111,7 @@ public class BasicHexEngine : MonoBehaviour, IHexEngine {
         }
     }
     public  BasicHexModel hexModel;
-    int     neiboursCount;
+    int     neiboursCount = 1;
     float   tickProgressDelta;
     float   neigborsEffects;
     [SerializeField] List<BasicHexEngine> hexNeibours = new List<BasicHexEngine>();
