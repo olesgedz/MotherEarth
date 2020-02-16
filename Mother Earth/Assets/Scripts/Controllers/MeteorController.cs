@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CMeteor : BasicController
+public class MeteorController : BasicController
 {
     public GameObject Meteor;
     public GameObject Explosion;
